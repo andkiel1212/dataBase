@@ -40,3 +40,9 @@ def log_in(request):
 def log_out(request):
     logout(request)
     return redirect(reverse('users:login'))
+
+
+
+def users(request):
+    user = CustomUser.objects.all()
+    return render(request,'users/home.html',{'user':user})

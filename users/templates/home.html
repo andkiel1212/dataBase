@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 {% if user.is_authenticated %}
-  Your are logged in {{ user.username }}!
-  <p><a href="{% url 'users:logout' %}">Log Out</a></p>
+Your are logged in {{ user.first_name }} !
+<p><a href="{% url 'users:logout' %}">Log Out</a></p>
+<a><img src="{{ CustomUSer.qr_code.url }}" height="200"></a>
 {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'users:login' %}">Log In</a> |
-  <a href="{% url 'users:signup' %}">Sign Up</a>
+<p>You are not logged in</p>
+<a href="{% url 'users:login' %}">Log In</a> |
+<a href="{% url 'users:signup' %}">Sign Up</a>
+
+
 {% endif %}
+
 {% endblock %}
