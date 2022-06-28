@@ -4,12 +4,12 @@
 {% block content %}
 {% if user.is_authenticated %}
 Your are logged in {{ user.first_name }} !
-<p><a href="{% url 'users:logout' %}">Log Out</a></p>
-<a><img src="{{ CustomUSer.qr_code.url }}" height="200"></a>
+<p><a href="{% url 'logout' %}">Log Out</a></p>
+
 {% else %}
 <p>You are not logged in</p>
-<a href="{% url 'users:login' %}">Log In</a> |
-<a href="{% url 'users:signup' %}">Sign Up</a>
+<a href="{% url 'login' %}">Log In</a> |
+<a href="{% url 'signup' %}">Sign Up</a>
 
 
 {% endif %}

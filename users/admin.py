@@ -1,15 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser
+from .models import User
 
 
 
 
-@admin.register(CustomUser)
-class CustomUserAdmin(UserAdmin):
-    model = CustomUser
-    list_display = ('first_name', 'is_staff', 'is_active','email','image_tag')
+@admin.register(User)
+class UserAdmin(UserAdmin):
+    model = User
+    list_display = ('email','first_name', 'is_staff', 'is_active','image_tag')
     list_filter = ('email', 'is_staff', 'is_active',)
     readonly_fields = ('image_tag',)
     fieldsets = (
@@ -19,7 +19,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None,{
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('first_name','email', 'password1', 'password2', 'is_staff', 'is_active')}
         ),
     )
     search_fields = ('email',)
