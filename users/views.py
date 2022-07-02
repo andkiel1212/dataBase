@@ -46,3 +46,14 @@ def log_out(request):
 def users(request):
     user = CustomUser.objects.all()
     return render(request,'users/home.html',{'user':user})
+
+
+def home(request):
+    user = User.objects.get(id=1)
+
+    context = {
+        'email' : email,
+        'qr_user': qr_code,
+    }
+
+    return render(request, 'users/home.html', contex)

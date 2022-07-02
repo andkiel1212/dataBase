@@ -5,6 +5,7 @@
 {% if user.is_authenticated %}
 Your are logged in {{ user.first_name }} !
 <p><a href="{% url 'logout' %}">Log Out</a></p>
+<img src="{% static 'qr_code/qr_code-kamwp.pl.png' %}" alt="">
 
 {% else %}
 <p>You are not logged in</p>
