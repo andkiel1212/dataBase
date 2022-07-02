@@ -11,7 +11,11 @@ from django.utils.safestring import mark_safe
 from django.core.validators import MaxValueValidator, MinValueValidator 
 
 
+
+
 BOOL_CHOICES = ((True, 'TAK'), (False, 'NIE'))
+
+
 
 # USER_TYPE_CHOICES = (
 #       (1, 'student'),
@@ -55,7 +59,7 @@ class UserManager(BaseUserManager):
 #custom user
 class User(AbstractUser):
     username = None # override user from base user class / delete username
-    email = models.EmailField(verbose_name='Email', null=True, unique=True, max_length=100 )
+    email = models.EmailField(verbose_name='Email', null=True, unique=True, max_length=100)
     qr_code = models.ImageField(upload_to='qr_codes', blank=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     position = models.ForeignKey('Position',related_name='user_position', on_delete=models.PROTECT ,null=True, blank=False)
@@ -108,12 +112,22 @@ class User(AbstractUser):
 
 #EVENT 
 class Event(models.Model):
-    #type_event = models.ManyToManyField('TypeEvent', related_name='type_events')
+    type_event = models.ManyToManyField('TypeEvent', related_name='type_events', null=True,)
     event = models.CharField(max_length=50)
-    members_event = models.ManyToManyField(User, related_name = 'members_event+', through='RolesEvent')
-    type_event = models.OneToOneField('TypeEvent',on_delete=models.PROTECT, null=True)
-    
-    
+    member = models.ManyToManyField(User, related_name = 'members_event', through='MemberEvent',blank=True,)
+    type_event = models.OneToOneField('TypeEvent', on_delete=models.PROTECT, null=False, blank=False)
+    event_for_benefi = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    num_const_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    num_disposable_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    num_pers_secure = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    donati_value_pln = models.IntegerField()
+    currency = models.ForeignKey('Currency', related_name='currencya', on_delete=models.PROTECT, null=True)
+    donati_weight = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    event_incom = models.IntegerField()
+    event_cost = models.IntegerField()
+    observations = models.TextField(max_length=255)
+    positiv_elem = models.TextField(max_length=255)
+    improvment_elem = models.TextField(max_length=255)
 
     def __str__(self):
         return self.event
@@ -158,25 +172,24 @@ class Department(models.Model):
             verbose_name_plural = "Oddział"
 
 class TypeEvent(models.Model):
-    types = models.CharField('Rodzaj wydarzenia',max_length=40,  unique=True)
-    added_by = models.ForeignKey(User, related_name='event_type_added_by',  on_delete=models.PROTECT, editable=False)
+    types = models.CharField('Rodzaj wydarzenia',max_length=40)
+    added_by = models.ForeignKey(User, related_name='event_type_added_by',blank=False,  on_delete=models.PROTECT, default=User )
     depart_show = models.ForeignKey('Department', related_name='depart_show',  on_delete=models.PROTECT, null=True )
     
 
 
     def __str__(self):
-        return self.types
+        return str(self.types)
     
     def save(self, *args, **kwargs):
-        
         if not self.added_by: 
-            self.added_by = request.user
+            self.added_by = User
         super().save(*args,**kwargs)
 
     class Meta:
         verbose_name_plural = "Rodzaj Wydarzenia"
 
-class RolesEvent(models.Model):
+class MemberEvent(models.Model):
     TYPE_CHOICES=(
         ('kierowca', ("Kierowca")),
         ('koordynator', ("Koordynator")),
@@ -188,12 +201,37 @@ class RolesEvent(models.Model):
         ('wolontariusz', ("Wolontariusz")),
         )
 
-    user_type  = models.CharField(max_length=40, default='wolontariusz', null=True, choices=TYPE_CHOICES)
-    hourse_work = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(24)])
-    member_event = models.ForeignKey(User, related_name='member_event',null=True, on_delete=models.PROTECT)
-    user_event = models.ForeignKey(Event, related_name='user_event',null=True, on_delete=models.PROTECT)
+    member = models.ForeignKey(User,related_name='member_event', on_delete=models.PROTECT, blank=False, null=False)
+    user = models.ForeignKey(Event, related_name='user_member', on_delete=models.PROTECT,#blank=False,null=False)
+    )
+    is_work = models.BooleanField(choices=BOOL_CHOICES, default=True)
+    hourse_work = models.IntegerField( validators=[MinValueValidator(0), MaxValueValidator(24)])
+    is_prepare = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    hourse_prepare = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(24)])
+
+    def save(self, *args, **kwargs):
+        if not self.is_work: 
+            self.hourse_work = 0
+        super().save(*args,**kwargs)
+
+
+    def save(self, *args, **kwargs):
+        if not self.is_prepare: 
+            self.hourse_prepare = Null
+        super().save(*args,**kwargs)
     
-   
+
 
     def __str__(self):
-            return self.user_type
+            return str(self.user)
+
+class Currency(models.Model):
+    TYPE_CHOICES=(
+        ('pln', ("PLN")),
+        )
+
+    currency  = models.CharField(max_length=20, default='pln', null=True, choices=TYPE_CHOICES, unique=True)
+
+    
+    def __str__(self):
+            return str(self.currency)
