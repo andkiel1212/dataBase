@@ -8,7 +8,7 @@ from .models import User, Country, Department, TypeEvent, Position, Event, Membe
 class MemberEventInLine(admin.TabularInline):
     model = MemberEvent
     extra = 1
-    list_display = ('member','user','hourse_work','is_work','hourse_work' )
+    list_display = ('member','user','hourse_work','is_work','hourse_work')
     fieldsets = (
         (None, {'fields': ('member','user','is_work','hourse_work','is_prepare','hourse_prepare')}),)
 
@@ -76,8 +76,8 @@ class DepartmentAdmin(admin.ModelAdmin):
 @admin.register(TypeEvent)
 class TypeEventAdmin(admin.ModelAdmin):
     #model = TypeEvent
-    list_display = ('types','added_by',)
-    fieldsets = ((None, {'fields': ('types',)})),
+    list_display = ('types','added_by')
+    fieldsets = ((None, {'fields': ('types','depart_show',)})),
 
 
     # def has_delete_permission(self, request, obj=None):

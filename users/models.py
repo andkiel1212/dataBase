@@ -112,10 +112,9 @@ class User(AbstractUser):
 
 #EVENT 
 class Event(models.Model):
-    type_event = models.ManyToManyField('TypeEvent', related_name='type_events', null=True,)
+    type_event = models.ForeignKey('TypeEvent', related_name='type_events',on_delete=models.PROTECT, null=True,)
     event = models.CharField(max_length=50)
     member = models.ManyToManyField(User, related_name = 'members_event', through='MemberEvent',blank=True,)
-    type_event = models.OneToOneField('TypeEvent', on_delete=models.PROTECT, null=False, blank=False)
     event_for_benefi = models.BooleanField(choices=BOOL_CHOICES, default=False)
     num_const_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
     num_disposable_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
@@ -172,9 +171,10 @@ class Department(models.Model):
             verbose_name_plural = "Oddział"
 
 class TypeEvent(models.Model):
-    types = models.CharField('Rodzaj wydarzenia',max_length=40)
+    
+    types = models.CharField('Rodzaj wydarzenia',max_length=40, unique=False)
     added_by = models.ForeignKey(User, related_name='event_type_added_by',blank=False,  on_delete=models.PROTECT, default=User )
-    depart_show = models.ForeignKey('Department', related_name='depart_show',  on_delete=models.PROTECT, null=True )
+    depart_show = models.ManyToManyField('Department' )
     
 
 
@@ -228,6 +228,9 @@ class MemberEvent(models.Model):
 class Currency(models.Model):
     TYPE_CHOICES=(
         ('pln', ("PLN")),
+        ('chf', ("CHF")),
+        ('eur', ("EUR")),
+        ('usd', ("USD")),
         )
 
     currency  = models.CharField(max_length=20, default='pln', null=True, choices=TYPE_CHOICES, unique=True)
