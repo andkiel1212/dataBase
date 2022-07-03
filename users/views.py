@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
+from .models import EditionEvent
 
 from .forms import SignUpForm, LogInForm
 
@@ -48,12 +49,7 @@ def users(request):
     return render(request,'users/home.html',{'user':user})
 
 
-def home(request):
-    user = User.objects.get(id=1)
-
-    context = {
-        'email' : email,
-        'qr_user': qr_code,
-    }
-
-    return render(request, 'users/home.html', contex)
+# def list_event(request):
+#     events = EditionEvent.objects.all()
+#     print(events)
+#     return render(request,'dataBase/users/templates/list-event/html', {'events':events})

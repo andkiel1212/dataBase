@@ -9,14 +9,16 @@ from django.core.files import File
 from PIL import Image, ImageDraw
 from django.utils.safestring import mark_safe
 from django.core.validators import MaxValueValidator, MinValueValidator 
+from datetime import date
 
-
-
+CURRENCY_CHOICES=(
+    ('pln', ("PLN")),
+    ('chf', ("CHF")),
+    ('eur', ("EUR")),
+    ('usd', ("USD")),
+    )
 
 BOOL_CHOICES = ((True, 'TAK'), (False, 'NIE'))
-
-
-
 # USER_TYPE_CHOICES = (
 #       (1, 'student'),
 #       (2, 'teacher'),
@@ -114,20 +116,7 @@ class User(AbstractUser):
 class Event(models.Model):
     type_event = models.ForeignKey('TypeEvent', related_name='type_events',on_delete=models.PROTECT, null=True,)
     event = models.CharField(max_length=50)
-    member = models.ManyToManyField(User, related_name = 'members_event', through='MemberEvent',blank=True,)
-    event_for_benefi = models.BooleanField(choices=BOOL_CHOICES, default=False)
-    num_const_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
-    num_disposable_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
-    num_pers_secure = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
-    donati_value_pln = models.IntegerField()
-    currency = models.ForeignKey('Currency', related_name='currencya', on_delete=models.PROTECT, null=True)
-    donati_weight = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
-    event_incom = models.IntegerField()
-    event_cost = models.IntegerField()
-    observations = models.TextField(max_length=255)
-    positiv_elem = models.TextField(max_length=255)
-    improvment_elem = models.TextField(max_length=255)
-
+   
     def __str__(self):
         return self.event
 
@@ -172,9 +161,9 @@ class Department(models.Model):
 
 class TypeEvent(models.Model):
     
-    types = models.CharField('Rodzaj wydarzenia',max_length=40, unique=False)
-    added_by = models.ForeignKey(User, related_name='event_type_added_by',blank=False,  on_delete=models.PROTECT, default=User )
-    depart_show = models.ManyToManyField('Department' )
+    types = models.CharField('Rodzaj wydarzenia', max_length=40, unique=True)
+    added_by = models.ForeignKey(User, related_name='event_type_added_by', blank=False, on_delete=models.PROTECT, default=User )
+    depart_show = models.ManyToManyField('Department')
     
 
 
@@ -189,7 +178,29 @@ class TypeEvent(models.Model):
     class Meta:
         verbose_name_plural = "Rodzaj Wydarzenia"
 
+class EditionEvent(models.Model):
+   
+
+    event_name = models.ForeignKey('TypeEvent', related_name='event_name', on_delete=models.PROTECT, null=True,)
+    edition_event = models.ForeignKey('Event', related_name='editio_event', on_delete=models.PROTECT, null=True,)
+    #date_event = models.DateTimeField()
+    date = models.DateField( default=date.today)
+    member = models.ManyToManyField(User, related_name = 'members_event', through='MemberEvent',blank=True,)
+    event_for_benefi = models.BooleanField(choices=BOOL_CHOICES, default=False)
+    num_const_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    num_disposable_benefi = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    num_pers_secure = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    donati_value_pln = models.IntegerField()
+    currency  = models.CharField(max_length=20, default='pln', null=True, choices=CURRENCY_CHOICES, unique=True)
+    donati_weight = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(50)])
+    event_incom = models.IntegerField()
+    event_cost = models.IntegerField()
+    observations = models.TextField(max_length=255)
+    positiv_elem = models.TextField(max_length=255)
+    improvment_elem = models.TextField(max_length=255)
+    
 class MemberEvent(models.Model):
+    
     TYPE_CHOICES=(
         ('kierowca', ("Kierowca")),
         ('koordynator', ("Koordynator")),
@@ -202,7 +213,7 @@ class MemberEvent(models.Model):
         )
 
     member = models.ForeignKey(User,related_name='member_event', on_delete=models.PROTECT, blank=False, null=False)
-    user = models.ForeignKey(Event, related_name='user_member', on_delete=models.PROTECT,#blank=False,null=False)
+    user = models.ForeignKey(EditionEvent, related_name='user_member', on_delete=models.PROTECT,#blank=False,null=False)
     )
     is_work = models.BooleanField(choices=BOOL_CHOICES, default=True)
     hourse_work = models.IntegerField( validators=[MinValueValidator(0), MaxValueValidator(24)])
@@ -222,19 +233,4 @@ class MemberEvent(models.Model):
     
 
 
-    def __str__(self):
-            return str(self.user)
-
-class Currency(models.Model):
-    TYPE_CHOICES=(
-        ('pln', ("PLN")),
-        ('chf', ("CHF")),
-        ('eur', ("EUR")),
-        ('usd', ("USD")),
-        )
-
-    currency  = models.CharField(max_length=20, default='pln', null=True, choices=TYPE_CHOICES, unique=True)
-
     
-    def __str__(self):
-            return str(self.currency)

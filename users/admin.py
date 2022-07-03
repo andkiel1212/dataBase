@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Country, Department, TypeEvent, Position, Event, MemberEvent, Currency
+from .models import User, Country, Department, TypeEvent, Position, Event, MemberEvent, EditionEvent
 
 
 #for form inline ManyToMany Member
@@ -31,10 +31,23 @@ class UserAdmin(UserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
 
+@admin.register(EditionEvent)
+class EditionEventAdmin(admin.ModelAdmin):
+    #model = EditionEvent
+    inlines = [MemberEventInLine]
+    # list_display = ('event_name',)
+    # fieldsets = ((None, {'fields': ('event_name','edition_event')})),
+    # # readonly_fields=('department',)
+
+  
+
+    # # def has_delete_permission(self, request, obj=None):
+    #     return False
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     model = Event
-    inlines = [MemberEventInLine]
+    
     # list_display = ['event','is_work',' hourse_work','is_prepare','hourse_prepare']
     # fieldsets = ((None, {'fields': ('event','is_work',' hourse_work','is_prepare','hourse_prepare')})),
     # # readonly_fields=('department',)
@@ -95,7 +108,3 @@ class TypeEventAdmin(admin.ModelAdmin):
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
-
-@admin.register(Currency)
-class CurrencyAdmin(admin.ModelAdmin):
-    model = Currency
