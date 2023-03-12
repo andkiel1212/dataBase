@@ -20,10 +20,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('', TemplateView.as_view(template_name='home.html'), name='home'), # quick view
+    path('', TemplateView.as_view(template_name='home.html'), name='home'), # quick view
     path('users/', include('users.urls')), 
 ]
 

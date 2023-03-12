@@ -1,19 +1,15 @@
 {% extends 'base.html' %}
-{% load static %}
+
 
 {% block content %}
-{% if user.is_authenticated %}
-Your are logged in {{ user.first_name }} {{ user.last_name }} !
-<p><a href="{% url 'logout' %}">Log Out</a></p>
-<h1><a href="{% url 'list-event' %}"><button>Stwórz wydarzenie</button></a></h1>
-{% else %}
-<p>You are not logged in</p>
 
+{% for user in users %}
 
-<a href="{% url 'login' %}">Log In</a> |
-<a href="{% url 'signup' %}">Sign Up</a>
+<h2>
+    {{ user.last_name }}
+</h2>
 
+{% endfor %}
 
-{% endif %}
-
+<h1><a href="{% url 'home' %}"><button>Wróc</button></a></h1>
 {% endblock %}

@@ -5,7 +5,23 @@
   <title>Authentication system</title>
 </head>
 <body>
+
+{% block navbar %}
+{% if user.is_authenticated %}
+Your are logged in {{ user.first_name }} {{ user.last_name }} !
+<p><a href="{% url 'logout' %}">Log Out</a></p>
+
+{% else %}
+<p>You are not logged in</p>
+
+<a href="{% url 'login' %}">Log In</a> |
+<a href="{% url 'signup' %}">Sign Up</a>
+
+{% endif %}
+{% endblock navbar%}
+<h1><a href="{% url 'home' %}"><button>lista</button></a></h1>
   {% block content %}
   {% endblock %}
+
 </body>
 </html>

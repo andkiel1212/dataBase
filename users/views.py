@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
-from .models import EditionEvent
+from .models import EditionEvent, User
 
 from .forms import SignUpForm, LogInForm
 
@@ -45,11 +45,11 @@ def log_out(request):
 
 
 def users(request):
-    user = CustomUser.objects.all()
+    users = User.objects.all()
     return render(request,'users/home.html',{'user':user})
 
 
-# def list_event(request):
-#     events = EditionEvent.objects.all()
-#     print(events)
-#     return render(request,'dataBase/users/templates/list-event/html', {'events':events})
+def users_list(request):
+    users = User.objects.all()
+    print(users)
+    return render(request, 'users/users-list.html', {'user' : users})

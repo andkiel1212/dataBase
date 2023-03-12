@@ -15,9 +15,9 @@ class MemberEventInLine(admin.TabularInline):
 @admin.register(User)
 class UserAdmin(UserAdmin):
     model = User
-    list_display = ('email','first_name','last_name', 'position', 'is_staff', 'is_active','image_tag','country','department',)
+    list_display = ('email','first_name','last_name', 'position', 'is_staff', 'is_active','image_tag','country','department','email')
     list_filter = ('email', 'is_active',)
-    readonly_fields = ('image_tag','email')
+    readonly_fields = ('image_tag',)
     fieldsets = (
         (None, {'fields': ('image_tag','first_name','last_name','email','position','country','department','doctor','rescuer_kkp','category_b_driver','aut_to_drive_emergency_vehicles','aut_to_drive_foundation_vehicles','camp_counselor','maltese_instructor')}),
         ('Permissions and password', {'fields': ('password','is_staff', 'is_active', )}),
